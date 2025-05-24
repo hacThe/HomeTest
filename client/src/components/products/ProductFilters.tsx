@@ -20,8 +20,9 @@ export function ProductFilters() {
     const updateFilters = (key: string, value: string) => {
         const params = new URLSearchParams(searchParams.toString())
         // Reset page to 1 when any filter changes
-        params.set('_page', '1')
-
+        if (key !== "search" || value) {
+            params.set('_page', '1')
+        }
         if (value) {
             // Map frontend parameters to backend API parameters
             switch (key) {
