@@ -18,7 +18,7 @@ export const DEFAULT_PAGE_SIZE = 12
 export const PAGINATION_THRESHOLD = 4
 
 export const STATUS_COLORS = {
-  online: 'text-green-500',
+  online: 'text-green-400',
   offline: 'text-gray-400',
   away: 'text-yellow-500',
   busy: 'text-red-500'

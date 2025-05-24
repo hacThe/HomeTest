@@ -7,6 +7,12 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    'text-green-400',
+    'text-gray-400',
+    'text-yellow-500',
+    'text-red-500'
+  ],
   theme: {
   	extend: {
   		boxShadow: {

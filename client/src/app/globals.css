@@ -114,7 +114,7 @@
 @layer base {
   * {
     @apply border-border;
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; */
     overscroll-behavior: none;
   }
   html {
