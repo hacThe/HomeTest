@@ -7,6 +7,7 @@ import { ViewMoreButton } from "@/components/products/ViewMoreButton"
 import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
+import { Suspense } from "react"
 
 const DEFAULT_PAGE_SIZE = 12
 
@@ -82,7 +83,23 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
   return { products: allProducts, totalCount }
 }
 
-export default async function ProductsPage({
+function ProductsLoading() {
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full mt-4">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div key={index} className="animate-pulse">
+          <div className="bg-gray-200 rounded-lg aspect-square mb-4" />
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-3/4" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+async function ProductsContent({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -140,5 +157,17 @@ export default async function ProductsPage({
         {currentPage < totalPages && <ViewMoreButton currentPage={currentPage} />}
       </div>
     </div>
+  )
+}
+
+export default function ProductsPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  return (
+    <Suspense fallback={<ProductsLoading />}>
+      <ProductsContent searchParams={searchParams} />
+    </Suspense>
   )
 }
