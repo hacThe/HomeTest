@@ -1,5 +1,5 @@
 import { ProductFilters } from "@/components/products/ProductFilters"
-import  ProductCard  from "@/components/products/ProductCard"
+import ProductCard from "@/components/products/ProductCard"
 import { CategoryFilter } from "@/components/products/CategoryFilter"
 import { IProduct } from "@/types/product"
 import { ViewMoreButton } from "@/components/products/ViewMoreButton"
@@ -24,7 +24,7 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
 
   const buildQueryParams = (page: number) => {
     const queryParams = new URLSearchParams()
-    
+
     // Add all filter parameters
     Object.entries(searchParams).forEach(([key, value]) => {
       if (value && key !== QUERY_PARAMS.PAGE && key !== QUERY_PARAMS.LIMIT) {
@@ -34,7 +34,7 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
 
     // Set pagination parameters
     queryParams.append(QUERY_PARAMS.PAGE, page.toString())
-    queryParams.append(QUERY_PARAMS.LIMIT, pageSize.toString())
+    if (currentPage >= PAGINATION_THRESHOLD) queryParams.append(QUERY_PARAMS.LIMIT, pageSize.toString())
 
     return queryParams
   }
@@ -67,25 +67,20 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
     allProducts.push(...pageProducts)
     totalCount = parseInt(response.headers.get('X-Total-Count') || '0', 10)
   } else {
-    // Fetch products from page 1 to current page (load more approach)
-    for (let page = 1; page <= currentPage; page++) {
-      const queryParams = buildQueryParams(page)
-      const response = await fetch(`${API_BASE_URL}/products?${queryParams.toString()}`, {
-        cache: 'no-store'
-      })
+    // Fetch all products up to current page in a single request
+    const queryParams = buildQueryParams(1)
+    queryParams.append(QUERY_PARAMS.LIMIT, (currentPage * pageSize).toString())
+    const response = await fetch(`${API_BASE_URL}/products?${queryParams.toString()}`, {
+      cache: 'no-store'
+    })
 
-      if (!response.ok) {
-        await handleFetchError(response)
-      }
-
-      const pageProducts = await response.json()
-      allProducts.push(...pageProducts)
-
-      // Get total count from headers on first page
-      if (page === 1) {
-        totalCount = parseInt(response.headers.get('X-Total-Count') || '0', 10)
-      }
+    if (!response.ok) {
+      await handleFetchError(response)
     }
+
+    const pageProducts = await response.json()
+    allProducts.push(...pageProducts)
+    totalCount = parseInt(response.headers.get('X-Total-Count') || '0', 10)
   }
 
   return { products: allProducts, totalCount }
