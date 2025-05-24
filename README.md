@@ -1,7 +1,4 @@
-# Product Management System
-
-A full-stack product management system built with Next.js and Node.js, featuring a modern UI and RESTful API.
-
+# LocalShop
 ## 🚀 Quick Start with Docker
 
 The easiest way to run the application is using Docker Compose. Follow these steps:
