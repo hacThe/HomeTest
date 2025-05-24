@@ -39,7 +39,7 @@ export function ProductFilters() {
 
     return (
         <div className="w-64 space-y-4 sticky top-[180px] z-40">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 relative">
                 <label className="text-sm font-semibold">Search</label>
                 <Input
                     placeholder="Search"

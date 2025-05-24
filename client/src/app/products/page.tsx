@@ -106,7 +106,7 @@ async function ProductsContent({
   const totalPages = Math.ceil(totalCount / productsPerPage)
 
   return (
-    <div className="py-8 space-y-10">
+    <div className="py-8 space-y-10 relative">
       {/* Categories Row */}
       <CategoryFilter />
 
