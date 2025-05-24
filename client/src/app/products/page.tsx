@@ -194,18 +194,25 @@ async function ProductsContent({
           <ProductFilters />
         </div>
 
-        <div className="width-full">
+        <div className="w-full">
           {/* Top Navigation */}
           {currentPage >= PAGINATION_THRESHOLD && (
             <TopNavigation currentPage={currentPage} totalPages={totalPages} />
           )}
 
           {/* Products Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+
+          {products.length === 0 ? (
+            <div className="flex-1 w-full mt-16">
+              <p className="text-lg text-gray-600 text-center w-full">No products found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
 
           {/* Page Info and Navigation */}
           <div className="flex flex-col items-center gap-4 mt-12">
