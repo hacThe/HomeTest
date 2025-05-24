@@ -102,10 +102,15 @@ export function ProductFilters() {
             <div>
                 <label className="text-sm font-semibold">Price</label>
                 <Select
-                    value={searchParams.get(QUERY_PARAMS.SORT) || ""}
+                    value={searchParams.get(QUERY_PARAMS.ORDER) || ""}
                     onValueChange={(value) => {
-                        updateFilters(QUERY_PARAMS.SORT, 'price')
-                        updateFilters(QUERY_PARAMS.ORDER, value)
+                        if (value) {
+                            updateFilters(QUERY_PARAMS.SORT, 'price')
+                            updateFilters(QUERY_PARAMS.ORDER, value)
+                        } else {
+                            updateFilters(QUERY_PARAMS.SORT, '')
+                            updateFilters(QUERY_PARAMS.ORDER, '')
+                        }
                     }}
                 >
                     <SelectTrigger><SelectValue placeholder="Select price" /></SelectTrigger>
