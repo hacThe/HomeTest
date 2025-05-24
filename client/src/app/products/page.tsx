@@ -182,7 +182,7 @@ async function ProductsContent({
               <DrawerHeader>
                 <DrawerTitle>Filters</DrawerTitle>
               </DrawerHeader>
-              <div className="px-4">
+              <div className="px-4 mt-6">
                 <ProductFilters />
               </div>
             </DrawerContent>

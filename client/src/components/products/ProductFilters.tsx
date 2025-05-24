@@ -78,11 +78,14 @@ export function ProductFilters() {
 
     return (
         <div className="w-64 space-y-4 sticky top-[180px] z-40">
-            <Input
-                placeholder="Search"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-            />
+            <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold">Search</label>
+                <Input
+                    placeholder="Search"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                />
+            </div>
             {/* Price Range is under construction, waiting for backend to be ready */}
             <div>
                 <TooltipProvider delayDuration={200}>
