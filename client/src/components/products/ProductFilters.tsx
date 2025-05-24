@@ -1,7 +1,6 @@
 "use client"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -73,52 +72,49 @@ export function ProductFilters() {
             </div>
             <div>
                 <label className="text-sm font-semibold">Tier</label>
-                <Select
+                <select
                     value={searchParams.get(QUERY_PARAMS.TIER) || ""}
-                    onValueChange={(value) => updateFilters(QUERY_PARAMS.TIER, value)}
+                    onChange={(e) => updateFilters(QUERY_PARAMS.TIER, e.target.value)}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_12px] bg-[right_12px_center] bg-no-repeat pr-10"
                 >
-                    <SelectTrigger><SelectValue placeholder="Select tier" /></SelectTrigger>
-                    <SelectContent>
-                        {PRODUCT_TIERS.map((tier) => (
-                            <SelectItem key={tier} value={tier}>{tier}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                    <option value="">Select tier</option>
+                    {PRODUCT_TIERS.map((tier) => (
+                        <option key={tier} value={tier}>{tier}</option>
+                    ))}
+                </select>
             </div>
             <div>
                 <label className="text-sm font-semibold">Theme</label>
-                <Select
+                <select
                     value={searchParams.get(QUERY_PARAMS.THEME) || ""}
-                    onValueChange={(value) => updateFilters(QUERY_PARAMS.THEME, value)}
+                    onChange={(e) => updateFilters(QUERY_PARAMS.THEME, e.target.value)}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_12px] bg-[right_12px_center] bg-no-repeat pr-10"
                 >
-                    <SelectTrigger><SelectValue placeholder="Select theme" /></SelectTrigger>
-                    <SelectContent>
-                        {PRODUCT_THEMES.map((theme) => (
-                            <SelectItem key={theme} value={theme}>{theme}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                    <option value="">Select theme</option>
+                    {PRODUCT_THEMES.map((theme) => (
+                        <option key={theme} value={theme}>{theme}</option>
+                    ))}
+                </select>
             </div>
             <div>
                 <label className="text-sm font-semibold">Price</label>
-                <Select
+                <select
                     value={searchParams.get(QUERY_PARAMS.ORDER) || ""}
-                    onValueChange={(value) => {
-                        if (value) {
+                    onChange={(e) => {
+                        if (e.target.value) {
                             updateFilters(QUERY_PARAMS.SORT, 'price')
-                            updateFilters(QUERY_PARAMS.ORDER, value)
+                            updateFilters(QUERY_PARAMS.ORDER, e.target.value)
                         } else {
                             updateFilters(QUERY_PARAMS.SORT, '')
                             updateFilters(QUERY_PARAMS.ORDER, '')
                         }
                     }}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_12px] bg-[right_12px_center] bg-no-repeat pr-10"
                 >
-                    <SelectTrigger><SelectValue placeholder="Select price" /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value={SORT_OPTIONS.PRICE_ASC}>Low to High</SelectItem>
-                        <SelectItem value={SORT_OPTIONS.PRICE_DESC}>High to Low</SelectItem>
-                    </SelectContent>
-                </Select>
+                    <option value="">Select price</option>
+                    <option value={SORT_OPTIONS.PRICE_ASC}>Low to High</option>
+                    <option value={SORT_OPTIONS.PRICE_DESC}>High to Low</option>
+                </select>
             </div>
             <Button
                 variant="outline"
