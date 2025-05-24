@@ -10,10 +10,23 @@ import { Filter } from "lucide-react"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
 import { Suspense } from "react"
 import { API_BASE_URL, DEFAULT_PAGE_SIZE, PAGINATION_THRESHOLD, QUERY_PARAMS } from "@/constants"
+import { Card, CardContent } from "@/components/ui/card"
 
 interface ProductsResponse {
   products: IProduct[]
   totalCount: number
+}
+
+async function getRandomProducts(count: number = 4): Promise<IProduct[]> {
+  const response = await fetch(`${API_BASE_URL}/products?_limit=${count}&tier=Deluxe`, {
+    cache: 'no-store'
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch random products')
+  }
+
+  return response.json()
 }
 
 async function getProducts(searchParams: { [key: string]: string | string[] | undefined }): Promise<ProductsResponse> {
@@ -102,6 +115,26 @@ function ProductsLoading() {
   )
 }
 
+function MinimalProductCard({ product }: { product: IProduct }) {
+  return (
+    <Card className="relative overflow-hidden rounded-none shadow-none hover:shadow-md transition-shadow">
+      <div className="flex gap-3 p-2">
+        <div className="w-16 h-16 shrink-0 bg-muted">
+          <img
+            src={`/images/mario-${product.imageId}.avif`}
+            alt={product.title}
+            className="object-cover w-full h-full grayscale-[1] transition-all duration-300 hover:grayscale-0 cursor-pointer"
+          />
+        </div>
+        <div className="flex flex-col justify-center min-w-0">
+          <div className="hover:underline cursor-pointer font-medium text-sm truncate">{product.title}</div>
+          <div className="text-sm font-semibold text-primary">{product.price} ETH</div>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
 async function ProductsContent({
   searchParams,
 }: {
@@ -110,11 +143,16 @@ async function ProductsContent({
   let products: IProduct[] = []
   let totalCount = 0
   let error: string | null = null
+  let newArrivals: IProduct[] = []
 
   try {
-    const result = await getProducts(searchParams)
+    const [result, randomProducts] = await Promise.all([
+      getProducts(searchParams),
+      getRandomProducts(4)
+    ])
     products = result.products
     totalCount = result.totalCount
+    newArrivals = randomProducts
   } catch (err) {
     error = err instanceof Error ? err.message : 'An unexpected error occurred'
   }
@@ -125,11 +163,24 @@ async function ProductsContent({
 
   return (
     <div className="py-8 space-y-10 relative">
+      {/* New Arrivals Section */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">New Arrivals</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {newArrivals.map((product) => (
+            <MinimalProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </div>
+
       {/* Categories Row */}
       <CategoryFilter />
 
+
       {/* Main Section */}
+
       <div className="flex flex-col lg:flex-row gap-6">
+
         {/* Mobile Filter Button */}
         <div className="lg:hidden">
           <Drawer>
@@ -162,6 +213,7 @@ async function ProductsContent({
 
         {/* Desktop Filters Sidebar */}
         <div className="hidden lg:block w-64 shrink-0">
+          <h2 className="text-2xl font-bold mb-2">Products</h2>
           <ProductFilters />
         </div>
 

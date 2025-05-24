@@ -708,7 +708,7 @@
       "title": "Darkwave Diva",
       "category": "Accessory",
       "price": 154.99,
-      "isFavorite": false,
+      "isFavorite": true,
       "createdAt": 1646534733000,
       "theme": "Halloween",
       "tier": "Deluxe",
