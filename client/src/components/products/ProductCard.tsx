@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, Mail, User, Circle } from "lucide-react"
+import { Mail, User, Circle } from "lucide-react"
 import { IProduct } from "@/types/product"
 import {
   Tooltip,
@@ -7,34 +7,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { FavoriteButton } from "./FavoriteButton"
+import { STATUS_COLORS } from "@/constants"
 
 interface ProductCardProps {
   product: IProduct
 }
 
 const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'online':
-      return 'text-green-500'
-    case 'offline':
-      return 'text-gray-400'
-    case 'away':
-      return 'text-yellow-500'
-    case 'busy':
-      return 'text-red-500'
-    default:
-      return 'text-gray-400'
-  }
+  return STATUS_COLORS[status.toLowerCase() as keyof typeof STATUS_COLORS] || STATUS_COLORS.offline
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="relative overflow-hidden rounded-none shadow-none">
       <div className="w-full h-32 bg-muted">
         <img
           src={`/images/mario-${product.imageId}.avif`}
           alt={product.title}
-          className="object-cover w-full h-full grayscale-[1] transition-all duration-300 hover:grayscale-0 cursor-pointer"
+          className={`object-cover w-full h-full grayscale-[1] transition-all duration-300 hover:grayscale-0 cursor-pointer`}
         />
       </div>
       <CardContent className="pt-4 space-y-1 text-sm p-4">
@@ -94,10 +85,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </Tooltip>
         </TooltipProvider>
         <div className="absolute bottom-2 right-2">
-          <Heart 
-            size={16} 
-            className={`${product.isFavorite ? 'text-red-500 fill-red-500' : 'text-muted-foreground'}`} 
-          />
+          <FavoriteButton productId={product.id} initialIsFavorite={product.isFavorite} />
         </div>
       </CardContent>
     </Card>
