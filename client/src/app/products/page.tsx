@@ -176,6 +176,16 @@ async function ProductsContent({
               <Button variant="outline" className="w-full">
                 <Filter className="mr-2 h-4 w-4" />
                 Filters
+                {searchParams.q || searchParams.tier || searchParams.theme || searchParams.price_lte ? (
+                  <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                    {[
+                      searchParams.q && "Search",
+                      searchParams.tier && "Tier",
+                      searchParams.theme && "Theme",
+                      searchParams.price_lte && "Price"
+                    ].filter(Boolean).length}
+                  </span>
+                ) : null}
               </Button>
             </DrawerTrigger>
             <DrawerContent>

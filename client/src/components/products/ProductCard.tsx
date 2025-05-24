@@ -39,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <CardContent className="pt-4 space-y-1 text-sm p-4">
         <div className="hover:underline cursor-pointer font-bold">{product.title}</div>
-        <div className="flex flex-wrap gap-1 ">
+        <div className="flex flex-wrap gap-1">
           <span className="font-medium px-2.5 py-1 text-xs rounded-full bg-gray-100 text-gray-700">
             Category: {product.category}
           </span>
