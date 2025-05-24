@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:5005'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5005'
 
 export const PRODUCT_THEMES = ['Dark', 'Light', 'Colorful', 'Halloween'] as const
 export const PRODUCT_TIERS = ['Basic', 'Premium', 'Deluxe'] as const
@@ -15,7 +15,7 @@ export const PRODUCT_CATEGORIES = [
 ] as const
 
 export const DEFAULT_PAGE_SIZE = 12
-export const PAGINATION_THRESHOLD = 3
+export const PAGINATION_THRESHOLD = 4
 
 export const STATUS_COLORS = {
   online: 'text-green-500',

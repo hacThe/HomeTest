@@ -2,6 +2,7 @@
 
 import { Heart } from "lucide-react"
 import { useState } from "react"
+import { API_BASE_URL } from "@/constants"
 
 interface FavoriteButtonProps {
   productId: number
@@ -31,7 +32,7 @@ export function FavoriteButton({ productId, initialIsFavorite }: FavoriteButtonP
     setTimeout(() => setIsBouncing(false), 400)
     setTimeout(() => setShowParticles(false), 700)
     try {
-      const response = await fetch(`http://localhost:5005/products/${productId}`, {
+      const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

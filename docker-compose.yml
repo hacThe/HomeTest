@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://server:5005
+    networks:
+      - tymex-network
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./server/db.json:/app/db.json
+    networks:
+      - tymex-network
+
+networks:
+  tymex-network:
+    driver: bridge 

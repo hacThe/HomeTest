@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useDebounce } from "@/hooks/useDebounce"
 import { PRODUCT_THEMES, PRODUCT_TIERS, QUERY_PARAMS, SORT_OPTIONS } from "@/constants"
 
@@ -15,7 +15,7 @@ export function ProductFilters() {
     const [searchValue, setSearchValue] = useState(searchParams.get(QUERY_PARAMS.SEARCH) || "")
     const debouncedSearchValue = useDebounce(searchValue, 500)
 
-    const updateFilters = (key: string, value: string) => {
+    const updateFilters = useCallback((key: string, value: string) => {
         const params = new URLSearchParams(searchParams.toString())
         
         // Reset page to 1 when any filter changes
@@ -30,15 +30,15 @@ export function ProductFilters() {
         }
 
         router.push(`/products?${params.toString()}`)
-    }
+    }, [searchParams, router])
 
     // Effect to handle debounced search
     useEffect(() => {
         updateFilters(QUERY_PARAMS.SEARCH, debouncedSearchValue)
-    }, [debouncedSearchValue])
+    }, [debouncedSearchValue, updateFilters])
 
     return (
-        <div className="w-64 space-y-4 sticky top-[180px] z-40">
+        <div className="w-64 space-y-4 sticky top-[180px] z-[90] bg-background">
             <div className="flex flex-col gap-2 relative">
                 <label className="text-sm font-semibold">Search</label>
                 <Input

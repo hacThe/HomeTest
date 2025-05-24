@@ -1,4 +1,3 @@
-// app/products/page.tsx
 import { ProductFilters } from "@/components/products/ProductFilters"
 import  ProductCard  from "@/components/products/ProductCard"
 import { CategoryFilter } from "@/components/products/CategoryFilter"
@@ -7,7 +6,7 @@ import { ViewMoreButton } from "@/components/products/ViewMoreButton"
 import { Pagination } from "@/components/products/Pagination"
 import { TopNavigation } from "@/components/products/TopNavigation"
 import { Button } from "@/components/ui/button"
-import { Filter, ChevronLeft, ChevronRight } from "lucide-react"
+import { Filter } from "lucide-react"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
 import { Suspense } from "react"
 import { API_BASE_URL, DEFAULT_PAGE_SIZE, PAGINATION_THRESHOLD, QUERY_PARAMS } from "@/constants"
@@ -40,6 +39,19 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
     return queryParams
   }
 
+  const handleFetchError = async (response: Response) => {
+    if (response.status === 404) {
+      throw new Error('Products not found. Please check your search parameters.')
+    }
+    if (response.status === 400) {
+      throw new Error('Invalid request parameters. Please check your filters.')
+    }
+    if (response.status >= 500) {
+      throw new Error('Server error. Please try again later.')
+    }
+    throw new Error(`Failed to fetch products: ${response.statusText}`)
+  }
+
   // If using pagination (currentPage >= PAGINATION_THRESHOLD), only fetch the current page
   if (currentPage >= PAGINATION_THRESHOLD) {
     const queryParams = buildQueryParams(currentPage)
@@ -48,7 +60,7 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
     })
 
     if (!response.ok) {
-      throw new Error('Failed to fetch products')
+      await handleFetchError(response)
     }
 
     const pageProducts = await response.json()
@@ -63,7 +75,7 @@ async function getProducts(searchParams: { [key: string]: string | string[] | un
       })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch products')
+        await handleFetchError(response)
       }
 
       const pageProducts = await response.json()
@@ -100,7 +112,18 @@ async function ProductsContent({
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const { products, totalCount } = await getProducts(searchParams)
+  let products: IProduct[] = []
+  let totalCount = 0
+  let error: string | null = null
+
+  try {
+    const result = await getProducts(searchParams)
+    products = result.products
+    totalCount = result.totalCount
+  } catch (err) {
+    error = err instanceof Error ? err.message : 'An unexpected error occurred'
+  }
+
   const currentPage = Number(searchParams[QUERY_PARAMS.PAGE]) || 1
   const productsPerPage = Number(searchParams[QUERY_PARAMS.LIMIT]) || DEFAULT_PAGE_SIZE
   const totalPages = Math.ceil(totalCount / productsPerPage)
@@ -153,13 +176,19 @@ async function ProductsContent({
             <TopNavigation currentPage={currentPage} totalPages={totalPages} />
           )}
 
-          {/* Products Grid */}
+          {/* Error Message */}
+          {error && (
+            <div className="flex-1 w-full mt-16">
+              <p className="text-lg text-red-600 text-center w-full">{error}</p>
+            </div>
+          )}
 
-          {products.length === 0 ? (
+          {/* Products Grid */}
+          {!error && products.length === 0 ? (
             <div className="flex-1 w-full mt-16">
               <p className="text-lg text-gray-600 text-center w-full">No products found</p>
             </div>
-          ) : (
+          ) : !error && (
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -168,31 +197,37 @@ async function ProductsContent({
           )}
 
           {/* Page Info and Navigation */}
-          <div className="flex flex-col items-center gap-4 mt-12">
-
-            {currentPage < PAGINATION_THRESHOLD ? (
-              currentPage < totalPages && <>
-                <div className="text-sm text-gray-600">
-                  Page {currentPage} of {totalPages}
-                </div><ViewMoreButton currentPage={currentPage} /></>
-            ) : (
-              <Pagination currentPage={currentPage} totalPages={totalPages} />
-            )}
-          </div>
+          {!error && (
+            <div className="flex flex-col items-center gap-4 mt-12">
+              {currentPage < PAGINATION_THRESHOLD ? (
+                currentPage < totalPages && <>
+                  <div className="text-sm text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </div>
+                  <ViewMoreButton currentPage={currentPage} />
+                </>
+              ) : (
+                <Pagination currentPage={currentPage} totalPages={totalPages} />
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-export default function ProductsPage({
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function ProductsPage({
   searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
+}: Props) {
+  const resolvedSearchParams = await searchParams
   return (
     <Suspense fallback={<ProductsLoading />}>
-      <ProductsContent searchParams={searchParams} />
+      <ProductsContent searchParams={resolvedSearchParams} />
     </Suspense>
   )
 }
