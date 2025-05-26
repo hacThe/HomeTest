@@ -10,9 +10,7 @@ export interface SearchParams {
   [key: string]: string | string[] | undefined
 }
 
-/**
- * Fetches random products with optional count and tier filter
- */
+
 export async function getRandomProducts(count: number = 4): Promise<IProduct[]> {
   const response = await fetch(`${API_BASE_URL}/products?_limit=${count}&tier=Deluxe`, {
     cache: 'no-store'
@@ -25,9 +23,6 @@ export async function getRandomProducts(count: number = 4): Promise<IProduct[]> 
   return response.json()
 }
 
-/**
- * Updates the favorite status of a product
- */
 export async function updateProductFavorite(productId: number, isFavorite: boolean): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
     method: 'PATCH',
@@ -44,9 +39,6 @@ export async function updateProductFavorite(productId: number, isFavorite: boole
   }
 }
 
-/**
- * Builds query parameters for product API requests
- */
 function buildQueryParams(searchParams: SearchParams, page: number, pageSize: number): URLSearchParams {
   const queryParams = new URLSearchParams()
 
@@ -65,9 +57,6 @@ function buildQueryParams(searchParams: SearchParams, page: number, pageSize: nu
   return queryParams
 }
 
-/**
- * Handles fetch errors with appropriate error messages
- */
 async function handleFetchError(response: Response): Promise<never> {
   if (response.status === 404) {
     throw new Error('Products not found. Please check your search parameters.')
@@ -81,9 +70,7 @@ async function handleFetchError(response: Response): Promise<never> {
   throw new Error(`Failed to fetch products: ${response.statusText}`)
 }
 
-/**
- * Fetches products based on search parameters with pagination support
- */
+
 export async function getProducts(searchParams: SearchParams): Promise<ProductsResponse> {
   const currentPage = Number(searchParams[QUERY_PARAMS.PAGE]) || 1
   const pageSize = Number(searchParams[QUERY_PARAMS.LIMIT]) || DEFAULT_PAGE_SIZE
@@ -125,9 +112,6 @@ export async function getProducts(searchParams: SearchParams): Promise<ProductsR
   return { products: allProducts, totalCount }
 }
 
-/**
- * Fetches both products and new arrivals in parallel
- */
 export async function getProductsWithNewArrivals(searchParams: SearchParams) {
   try {
     const [productsResult, newArrivals] = await Promise.all([
