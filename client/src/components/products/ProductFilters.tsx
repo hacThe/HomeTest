@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useEffect, useCallback } from "react"
 import { useDebounce } from "@/hooks/useDebounce"
-import { PRODUCT_THEMES, PRODUCT_TIERS, QUERY_PARAMS, SORT_OPTIONS } from "@/constants"
+import { PRODUCT_THEMES, PRODUCT_TIERS, QUERY_PARAMS } from "@/constants"
 
 export function ProductFilters() {
     const router = useRouter()

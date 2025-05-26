@@ -1,19 +1,12 @@
-'use client'
-
 import { Card } from "@/components/ui/card"
 import { IProduct } from "@/types/product"
-import { useRouter } from "next/navigation"
 
 interface MinimalProductCardProps {
   product: IProduct
 }
 
 export function MinimalProductCard({ product }: MinimalProductCardProps) {
-  const router = useRouter()
 
-  const handleClick = () => {
-    router.push(`/products/${product.id}`)
-  }
 
   return (
     <Card 
@@ -21,13 +14,6 @@ export function MinimalProductCard({ product }: MinimalProductCardProps) {
       tabIndex={0}
       role="button"
       aria-label={`New arrival: ${product.title}, Price: ${product.price} ETH`}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          // Handle product selection/navigation here
-          console.log('New arrival selected:', product.title)
-        }
-      }}
     >
       <div className="flex gap-3 p-2">
         <div className="w-16 h-16 shrink-0 bg-muted">
