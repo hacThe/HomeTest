@@ -68,10 +68,12 @@ The backend API will be available at http://localhost:5005
 
 [DEMO](https://youtu.be/1EFWcjZfiGA)
 
-The demo video showcases the following features:
-- Product listing and search
-- Favorite product
-- Responsive design
+The demo video highlights the following features:
+- Comprehensive product listing with search, filtering, and sorting capabilities.
+- Animated favorite product functionality.
+- Fully responsive design for optimal viewing on any device.
+- Two distinct pagination methods: "Load More" and "View by Page."
+- Server-side rendering and Incremental Static Regeneration (ISR) for improved performance.
 
 ## 🏗️ Project Structure
 
