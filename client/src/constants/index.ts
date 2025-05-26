@@ -35,7 +35,6 @@ export const QUERY_PARAMS = {
   TIER: 'tier',
   THEME: 'theme',
   CATEGORY: 'category',
-  SORT: '_sort',
   ORDER: '_order',
   PAGE: '_page',
   LIMIT: '_limit'

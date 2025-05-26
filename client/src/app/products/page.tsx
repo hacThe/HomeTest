@@ -9,95 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
 import { Suspense } from "react"
-import { API_BASE_URL, DEFAULT_PAGE_SIZE, PAGINATION_THRESHOLD, QUERY_PARAMS } from "@/constants"
-import { Card, CardContent } from "@/components/ui/card"
-
-interface ProductsResponse {
-  products: IProduct[]
-  totalCount: number
-}
-
-async function getRandomProducts(count: number = 4): Promise<IProduct[]> {
-  const response = await fetch(`${API_BASE_URL}/products?_limit=${count}&tier=Deluxe`, {
-    cache: 'no-store'
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch random products')
-  }
-
-  return response.json()
-}
-
-async function getProducts(searchParams: { [key: string]: string | string[] | undefined }): Promise<ProductsResponse> {
-  const currentPage = Number(searchParams[QUERY_PARAMS.PAGE]) || 1
-  const pageSize = Number(searchParams[QUERY_PARAMS.LIMIT]) || DEFAULT_PAGE_SIZE
-  const allProducts: IProduct[] = []
-  let totalCount = 0
-
-  const buildQueryParams = (page: number) => {
-    const queryParams = new URLSearchParams()
-
-    // Add all filter parameters
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (value && key !== QUERY_PARAMS.PAGE && key !== QUERY_PARAMS.LIMIT) {
-        queryParams.append(key, value as string)
-      }
-    })
-
-    // Set pagination parameters
-    queryParams.append(QUERY_PARAMS.PAGE, page.toString())
-    if (currentPage >= PAGINATION_THRESHOLD) queryParams.append(QUERY_PARAMS.LIMIT, pageSize.toString())
-
-    return queryParams
-  }
-
-  const handleFetchError = async (response: Response) => {
-    if (response.status === 404) {
-      throw new Error('Products not found. Please check your search parameters.')
-    }
-    if (response.status === 400) {
-      throw new Error('Invalid request parameters. Please check your filters.')
-    }
-    if (response.status >= 500) {
-      throw new Error('Server error. Please try again later.')
-    }
-    throw new Error(`Failed to fetch products: ${response.statusText}`)
-  }
-
-  // If using pagination (currentPage >= PAGINATION_THRESHOLD), only fetch the current page
-  if (currentPage >= PAGINATION_THRESHOLD) {
-    const queryParams = buildQueryParams(currentPage)
-    const response = await fetch(`${API_BASE_URL}/products?${queryParams.toString()}`, {
-      cache: 'no-store'
-    })
-
-    if (!response.ok) {
-      await handleFetchError(response)
-    }
-
-    const pageProducts = await response.json()
-    allProducts.push(...pageProducts)
-    totalCount = parseInt(response.headers.get('X-Total-Count') || '0', 10)
-  } else {
-    // Fetch all products up to current page in a single request
-    const queryParams = buildQueryParams(1)
-    queryParams.append(QUERY_PARAMS.LIMIT, (currentPage * pageSize).toString())
-    const response = await fetch(`${API_BASE_URL}/products?${queryParams.toString()}`, {
-      cache: 'no-store'
-    })
-
-    if (!response.ok) {
-      await handleFetchError(response)
-    }
-
-    const pageProducts = await response.json()
-    allProducts.push(...pageProducts)
-    totalCount = parseInt(response.headers.get('X-Total-Count') || '0', 10)
-  }
-
-  return { products: allProducts, totalCount }
-}
+import { DEFAULT_PAGE_SIZE, PAGINATION_THRESHOLD, QUERY_PARAMS } from "@/constants"
+import { Card } from "@/components/ui/card"
+import { getProductsWithNewArrivals, SearchParams } from "@/lib/products.service"
+import { MinimalProductCard } from "@/components/products/MinimalProductCard"
 
 function ProductsLoading() {
   return (
@@ -115,47 +30,12 @@ function ProductsLoading() {
   )
 }
 
-function MinimalProductCard({ product }: { product: IProduct }) {
-  return (
-    <Card className="relative overflow-hidden rounded-none shadow-none hover:shadow-md transition-shadow">
-      <div className="flex gap-3 p-2">
-        <div className="w-16 h-16 shrink-0 bg-muted">
-          <img
-            src={`/images/mario-${product.imageId}.avif`}
-            alt={product.title}
-            className="object-cover w-full h-full grayscale-[1] transition-all duration-300 hover:grayscale-0 cursor-pointer"
-          />
-        </div>
-        <div className="flex flex-col justify-center min-w-0">
-          <div className="hover:underline cursor-pointer font-medium text-sm truncate">{product.title}</div>
-          <div className="text-sm font-semibold text-primary">{product.price} ETH</div>
-        </div>
-      </div>
-    </Card>
-  )
-}
-
 async function ProductsContent({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: SearchParams
 }) {
-  let products: IProduct[] = []
-  let totalCount = 0
-  let error: string | null = null
-  let newArrivals: IProduct[] = []
-
-  try {
-    const [result, randomProducts] = await Promise.all([
-      getProducts(searchParams),
-      getRandomProducts(4)
-    ])
-    products = result.products
-    totalCount = result.totalCount
-    newArrivals = randomProducts
-  } catch (err) {
-    error = err instanceof Error ? err.message : 'An unexpected error occurred'
-  }
+  const { products, totalCount, newArrivals, error } = await getProductsWithNewArrivals(searchParams)
 
   const currentPage = Number(searchParams[QUERY_PARAMS.PAGE]) || 1
   const productsPerPage = Number(searchParams[QUERY_PARAMS.LIMIT]) || DEFAULT_PAGE_SIZE
@@ -163,7 +43,6 @@ async function ProductsContent({
 
   return (
     <div className="py-8 space-y-10 relative">
-      {/* New Arrivals Section */}
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">New Arrivals</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -173,17 +52,11 @@ async function ProductsContent({
         </div>
       </div>
 
-      {/* Categories Row */}
       <CategoryFilter />
 
-
-      {/* Main Section */}
-
       <div className="flex flex-col lg:flex-row gap-6">
-
-        {/* Mobile Filter Button */}
         <div className="lg:hidden">
-          <Drawer>
+          <Drawer modal>
             <DrawerTrigger asChild>
               <Button variant="outline" className="w-full">
                 <Filter className="mr-2 h-4 w-4" />
@@ -200,7 +73,7 @@ async function ProductsContent({
                 ) : null}
               </Button>
             </DrawerTrigger>
-            <DrawerContent>
+            <DrawerContent className="z-[100]">
               <DrawerHeader>
                 <DrawerTitle>Filters</DrawerTitle>
               </DrawerHeader>
@@ -211,26 +84,22 @@ async function ProductsContent({
           </Drawer>
         </div>
 
-        {/* Desktop Filters Sidebar */}
         <div className="hidden lg:block w-64 shrink-0">
           <h2 className="text-2xl font-bold mb-2">Products</h2>
           <ProductFilters />
         </div>
 
         <div className="w-full">
-          {/* Top Navigation */}
           {currentPage >= PAGINATION_THRESHOLD && (
             <TopNavigation currentPage={currentPage} totalPages={totalPages} />
           )}
 
-          {/* Error Message */}
           {error && (
             <div className="flex-1 w-full mt-16">
               <p className="text-lg text-red-600 text-center w-full">{error}</p>
             </div>
           )}
 
-          {/* Products Grid */}
           {!error && products.length === 0 ? (
             <div className="flex-1 w-full mt-16">
               <p className="text-lg text-gray-600 text-center w-full">No products found</p>
@@ -243,7 +112,6 @@ async function ProductsContent({
             </div>
           )}
 
-          {/* Page Info and Navigation */}
           {!error && (
             <div className="flex flex-col items-center gap-4 mt-12">
               {currentPage < PAGINATION_THRESHOLD ? (

@@ -20,7 +20,11 @@ const getStatusColor = (status: string) => {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Card className="relative overflow-hidden rounded-none shadow-none">
+    <Card className="relative overflow-hidden rounded-none shadow-none"
+      tabIndex={0}
+      role="button"
+      aria-label={`Product: ${product.title}, Price: ${product.price} ETH`}
+    >
       <div className="w-full h-32 bg-muted">
         <img
           src={`/images/mario-${product.imageId}.avif`}

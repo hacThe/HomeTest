@@ -2,7 +2,7 @@
 
 import { Heart } from "lucide-react"
 import { useState } from "react"
-import { API_BASE_URL } from "@/constants"
+import { updateProductFavorite } from "@/lib/products.service"
 
 interface FavoriteButtonProps {
   productId: number
@@ -31,21 +31,9 @@ export function FavoriteButton({ productId, initialIsFavorite }: FavoriteButtonP
     if (!isFavorite) setShowParticles(true)
     setTimeout(() => setIsBouncing(false), 400)
     setTimeout(() => setShowParticles(false), 700)
+    
     try {
-      const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          isFavorite: !isFavorite
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update favorite status')
-      }
-
+      await updateProductFavorite(productId, !isFavorite)
       setIsFavorite(!isFavorite)
     } catch (error) {
       console.error('Error updating favorite status:', error)

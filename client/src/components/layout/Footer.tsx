@@ -19,9 +19,9 @@ export const Footer = () => {
           </div>
           <div className="space-y-2">
             <div className="font-semibold">CONTACT US</div>
-            <div>Email</div>
-            <div>Chat</div>
-            <div>Mail</div>
+            <div>Email: <a href="mailto:info@example.com">info@example.com</a></div>
+            <div>Chat: <a href="https://t.me/example">Telegram</a></div>
+            <div>Mail: <a href="mailto:info@example.com">info@example.com</a></div>
           </div>
           <div className="space-y-2">
             <div className="font-semibold">NEWSLETTER</div>

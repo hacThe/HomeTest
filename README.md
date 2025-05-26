@@ -66,7 +66,7 @@ The backend API will be available at http://localhost:5005
 
 ## 📹 Demo Video
 
-[Add your demo video link here]
+[DEMO](https://youtu.be/1EFWcjZfiGA)
 
 The demo video showcases the following features:
 - Product listing and search
@@ -93,7 +93,6 @@ tymex/
 - **Backend**:
   - Node.js
   - json-server
-  - TypeScript
 
 ## 📚 API Documentation
 For detailed API documentation, please refer to the [server README](./server/README.MD).

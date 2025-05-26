@@ -99,28 +99,41 @@ export function ProductFilters() {
             <div>
                 <label className="text-sm font-semibold">Price</label>
                 <select
-                    value={searchParams.get(QUERY_PARAMS.ORDER) || ""}
+                    value={searchParams.get('_sort') === 'price' ? searchParams.get('_order') || 'asc' : ''}
                     onChange={(e) => {
+                        const params = new URLSearchParams()
+                        // Copy all existing params except _sort and _order
+                        searchParams.forEach((value, key) => {
+                            if (key !== '_sort' && key !== '_order') {
+                                params.set(key, value)
+                            }
+                        })
+                        
                         if (e.target.value) {
-                            updateFilters(QUERY_PARAMS.SORT, 'price')
-                            updateFilters(QUERY_PARAMS.ORDER, e.target.value)
-                        } else {
-                            updateFilters(QUERY_PARAMS.SORT, '')
-                            updateFilters(QUERY_PARAMS.ORDER, '')
+                            params.set('_sort', 'price')
+                            params.set('_order', e.target.value)
                         }
+                        
+                        // Reset page to 1 when sorting changes
+                        params.set(QUERY_PARAMS.PAGE, '1')
+                        router.push(`/products?${params.toString()}`)
                     }}
                     className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px_12px] bg-[right_12px_center] bg-no-repeat pr-10"
                 >
                     <option value="">Select price</option>
-                    <option value={SORT_OPTIONS.PRICE_ASC}>Low to High</option>
-                    <option value={SORT_OPTIONS.PRICE_DESC}>High to Low</option>
+                    <option value="asc">Low to High</option>
+                    <option value="desc">High to Low</option>
                 </select>
             </div>
             <Button
                 variant="outline"
                 className="w-full"
                 onClick={() => {
-                    router.push("/products")
+                    setSearchValue("")
+                    updateFilters(QUERY_PARAMS.SEARCH, "")
+                    setTimeout(() => {
+                        router.replace("/products", { scroll: false })
+                    }, 0)
                 }}
             >
                 Reset Filter
