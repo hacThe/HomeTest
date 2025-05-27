@@ -101,6 +101,7 @@ export function FavoriteButton({ productId, initialIsFavorite }: FavoriteButtonP
         className={`${isFavorite ? 'text-red-500 fill-red-500' : 'text-muted-foreground'} cursor-pointer hover:scale-110 transition-transform ${isBouncing ? 'bounce' : ''}`}
         onClick={toggleFavorite}
         style={{ position: 'relative', zIndex: 20 }}
+        aria-label="favorite"
       />
     </span>
   )

@@ -133,4 +133,6 @@ export async function getProductsWithNewArrivals(searchParams: SearchParams) {
       error: err instanceof Error ? err.message : 'An unexpected error occurred'
     }
   }
-} 
+}
+
+export { buildQueryParams } 
